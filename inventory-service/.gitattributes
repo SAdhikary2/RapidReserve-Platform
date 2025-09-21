@@ -1,4 +1,33 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
 
-application.properties
+# Docker compose override files
+docker-compose.override.yml
+
+# Application properties with secrets
+src/main/resources/application-*.properties
+
+# Build outputs
+target/
+build/
+*.jar
+*.war
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

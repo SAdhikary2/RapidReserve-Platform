@@ -6,17 +6,21 @@ import com.rapidreserve.inventory_service.repository.EventRepository;
 import com.rapidreserve.inventory_service.repository.VenueRepository;
 import com.rapidreserve.inventory_service.response.EventInventoryResponse;
 import com.rapidreserve.inventory_service.response.VenueInventoryResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class InventoryService {
 
     private final EventRepository eventRepository;
     private final VenueRepository venueRepository;
 
+    @Autowired
     public InventoryService(final EventRepository eventRepository, final VenueRepository venueRepository ){
         this.eventRepository = eventRepository;
         this.venueRepository = venueRepository;
@@ -26,7 +30,7 @@ public class InventoryService {
         final List<Event> events = eventRepository.findAll();
         return events.stream().map(event -> EventInventoryResponse.builder()
                 .event(event.getName())
-                .capacity(event.getLeftCapacity())
+                .capacity(event.getAvailableCapacity())
                 .venue(event.getVenue())
                 .build()).collect(Collectors.toList());
     }
