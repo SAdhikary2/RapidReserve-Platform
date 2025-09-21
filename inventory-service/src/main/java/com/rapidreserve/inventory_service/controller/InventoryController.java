@@ -1,5 +1,6 @@
 package com.rapidreserve.inventory_service.controller;
 
+import com.rapidreserve.inventory_service.response.ApiResponse;
 import com.rapidreserve.inventory_service.response.EventInventoryResponse;
 import com.rapidreserve.inventory_service.response.VenueInventoryResponse;
 import com.rapidreserve.inventory_service.service.InventoryService;
@@ -20,15 +21,14 @@ public class InventoryController {
     }
 
     @GetMapping("/inventory/events")
-    public @ResponseBody List<EventInventoryResponse> ineventoryGetAllEvents(){
-        return inventoryService.getAllEvents();
+    public @ResponseBody ApiResponse<List<EventInventoryResponse>> inventoryGetAllEvents(){
+        List<EventInventoryResponse> events = inventoryService.getAllEvents();
+        return ApiResponse.success(events, "Events retrieved successfully");
     }
 
     @GetMapping("/inventory/venue/{venueId}")
-    public @ResponseBody VenueInventoryResponse inevntoryByVenueId(@PathVariable("venueId") Long venueId){
-        return inventoryService.getVenueInformation(venueId);
+    public @ResponseBody ApiResponse<VenueInventoryResponse> inventoryByVenueId(@PathVariable("venueId") Long venueId){
+        VenueInventoryResponse venue = inventoryService.getVenueInformation(venueId);
+        return ApiResponse.success(venue, "Venue retrieved successfully");
     }
-
-
-
 }
