@@ -48,6 +48,17 @@ public class InventoryService {
                 .build();
     }
 
+    public EventInventoryResponse getEventInventory(final Long eventId){
+        final Event event = eventRepository.findById(eventId).orElse(null);
+
+        return EventInventoryResponse.builder()
+                .event(event.getName())
+                .capacity(event.getAvailableCapacity())
+                .venue(event.getVenue())
+                .ticketPrice(event.getTicketPrice())
+                .eventId(event.getId())
+                .build();
+    }
 
 
 }

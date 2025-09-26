@@ -31,4 +31,11 @@ public class InventoryController {
         VenueInventoryResponse venue = inventoryService.getVenueInformation(venueId);
         return ApiResponse.success(venue, "Venue retrieved successfully");
     }
+
+    @GetMapping("/inventory/event/{eventId}")
+    public @ResponseBody ApiResponse<EventInventoryResponse> inventoryForEvent (@PathVariable("eventId") Long eventId){
+        EventInventoryResponse event = inventoryService.getEventInventory(eventId);
+        return ApiResponse.success(event, "Events retrieved successfully");
+    }
+
 }
