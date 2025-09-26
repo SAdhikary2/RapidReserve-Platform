@@ -2,11 +2,14 @@ package com.rapidreserve.booking_service.service;
 
 import com.rapidreserve.booking_service.client.InventoryServiceClient;
 import com.rapidreserve.booking_service.entity.Customer;
+import com.rapidreserve.booking_service.event.BookingEvent;
 import com.rapidreserve.booking_service.repository.CustomerRepository;
 import com.rapidreserve.booking_service.request.BookingRequest;
 import com.rapidreserve.booking_service.response.BookingResponse;
 import com.rapidreserve.booking_service.response.InventoryResponse;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class BookingService {
@@ -35,9 +38,26 @@ public class BookingService {
             throw new RuntimeException("Not enough inventory");
         }
 
+        //create booking
+        final BookingEvent bookingEvent = createBookingEvent(request, customer,  inventoryResponse);
+
+        //Send booking to order service on a kafka topic
+        
+
         return BookingResponse.builder().build();
     }
 
+
+    private BookingEvent createBookingEvent(final BookingRequest request,
+                                            final Customer customer,
+                                            final InventoryResponse inventoryResponse){
+        return BookingEvent.builder()
+                .userId(customer.getId())
+                .eventId(request.getEventId())
+                .ticketCount(request.getTicketCount())
+                .totalPrice(inventoryResponse.getTicketPrice().multiply(BigDecimal.valueOf(request.getTicketCount())))
+                .build();
+    }
 
 
 }
