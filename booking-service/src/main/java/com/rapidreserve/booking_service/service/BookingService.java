@@ -50,7 +50,6 @@ public class BookingService {
         //Send booking to order service on a kafka topic
         kafkaTemplate.send("booking", bookingEvent);
         log.info("Booking Sent to kafka: {}", bookingEvent);
-
         return BookingResponse.builder()
                 .userId(bookingEvent.getUserId())
                 .eventId(bookingEvent.getEventId())
