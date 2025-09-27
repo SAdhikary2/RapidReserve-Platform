@@ -7,20 +7,26 @@ import com.rapidreserve.booking_service.repository.CustomerRepository;
 import com.rapidreserve.booking_service.request.BookingRequest;
 import com.rapidreserve.booking_service.response.BookingResponse;
 import com.rapidreserve.booking_service.response.InventoryResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
+@Slf4j
 public class BookingService {
 
     private final CustomerRepository customerRepository;
     private final InventoryServiceClient inventoryServiceClient;
+    private final KafkaTemplate<String, BookingEvent> kafkaTemplate;
 
     public BookingService(final CustomerRepository customerRepository,
-                          final InventoryServiceClient inventoryServiceClient){
+                          final InventoryServiceClient inventoryServiceClient,
+                          final KafkaTemplate<String, BookingEvent> kafkaTemplate){
         this.customerRepository = customerRepository;
         this.inventoryServiceClient = inventoryServiceClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public BookingResponse createBooking(final BookingRequest request){
@@ -33,7 +39,7 @@ public class BookingService {
 
         //check if there is enough inventory
         final InventoryResponse inventoryResponse = inventoryServiceClient.getInventory(request.getEventId());
-        System.out.println("Inventory Service Response" + inventoryResponse);
+        log.info("Inventory Service Response" + inventoryResponse);
         if (inventoryResponse.getCapacity() < request.getTicketCount()){
             throw new RuntimeException("Not enough inventory");
         }
@@ -42,9 +48,15 @@ public class BookingService {
         final BookingEvent bookingEvent = createBookingEvent(request, customer,  inventoryResponse);
 
         //Send booking to order service on a kafka topic
-        
+        kafkaTemplate.send("booking", bookingEvent);
+        log.info("Booking Sent to kafka: {}", bookingEvent);
 
-        return BookingResponse.builder().build();
+        return BookingResponse.builder()
+                .userId(bookingEvent.getUserId())
+                .eventId(bookingEvent.getEventId())
+                .ticketCount(bookingEvent.getTicketCount())
+                .totalPrice(bookingEvent.getTotalPrice())
+                .build();
     }
 
 
