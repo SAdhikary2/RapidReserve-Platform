@@ -62,5 +62,13 @@ public class InventoryService {
                 .build();
     }
 
+    public void updateEventCapacity(final Long eventId, final Long ticketsBooked){
+        final Event event = eventRepository.findById(eventId).orElse(null);
+        event.setAvailableCapacity(event.getAvailableCapacity() - ticketsBooked);
+        eventRepository.saveAndFlush(event);
+        log.info("Updated event capacity for event is {} with tickets booked: {}", eventId, ticketsBooked);
+    }
+
+
 
 }
