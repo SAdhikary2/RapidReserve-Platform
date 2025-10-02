@@ -11,9 +11,27 @@ The platform is composed of several microservices:
 - **API Gateway**: Central entry point for all requests, routing them to appropriate services.
 - **Inventory Service**: Manages events, venues, and ticket inventories.
 - **Booking Service**: Handles customer bookings and orchestrates booking events.
-- **Order Service**: Responsible for managing orders and processing payments.
+- **Order Service**: Responsible for managing orders.
 
 Communication between services is handled asynchronously through Apache Kafka, enhancing scalability and resilience.
+
+## Technology Stack
+
+- **Spring Boot 3**: Rapid development of robust microservices.
+- **Apache Kafka**: Event streaming and asynchronous communication.
+- **Keycloak**: Centralized authentication and authorization.
+- **Resilience4j**: Microservices resilience, circuit breaking, retries.
+- **MySQL**: Reliable, scalable relational database.
+- **Flyway**: Automated, versioned database migrations.
+- **Spring Cloud Gateway**: API Gateway and traffic management.
+
+---
+
+## Architecture Overview
+
+> **Optionally Include Architecture Diagram/Screenshot Here**  
+> ![Architecture Diagram Suggestion](architecture-diagram.png)  
+> *(Replace with your actual diagram or export from draw.io/figma for HR presentations)*
 
 ## Microservices Breakdown
 
@@ -40,24 +58,35 @@ Communication between services is handled asynchronously through Apache Kafka, e
 ### 4. Order Service
 
 - **Location**: `/order-service`
-- **Purpose**: Manages customer orders and payment processing.
+- **Purpose**: Manages customer orders.
 
-## Technology Stack
+## Highlighted Features
 
-- **Spring Boot 3**: Core framework for all microservices.
-- **Apache Kafka**: Event-driven asynchronous communication.
-- **MySQL**: Relational database for storing entities.
-- **Flyway**: Database migration management.
-- **Keycloak**: Authentication and authorization.
-- **Spring Cloud Gateway**: API Gateway functionality.
+- **Microservices Architecture**  
+  Decoupled, independently deployable services for agility and scalability.
 
-## Features
+- **Event-Driven Communication**  
+  Asynchronous service interaction via **Apache Kafka** for real-time operations and loose coupling.
 
-- **Microservices Architecture**: Decoupled services for scalability.
-- **Event-Driven**: Services communicate via Kafka for resilience.
-- **Authentication/Authorization**: Secure access using Keycloak.
-- **Database Migrations**: Managed using Flyway for consistency.
-- **Real-Time Inventory Management**: Accurate event and ticket tracking.
+- **Authentication & Authorization**  
+  **Keycloak** integration ensures secure, role-based access across all services.
+
+- **Resilience & Fault Tolerance**  
+  **Resilience4j** provides advanced circuit breaker, retry, and rate limiter patterns—ensuring high reliability under load.
+
+- **Database Management**  
+  **MySQL** for persistent data storage, with **Flyway** for automated schema migrations.
+
+- **API Gateway**  
+  **Spring Cloud Gateway** enables unified routing, monitoring, and security for all APIs.
+
+- **Real-Time Inventory**  
+  Centralized tracking of event capacity and ticket availability.
+
+- **Scalable Order Processing**  
+  Automated, reliable workflow from booking to payment confirmation.
+
+---
 
 ## Getting Started
 
@@ -104,4 +133,4 @@ Each service contains its own source code, configuration, and resources.
    - Booking Service validates customer, checks inventory, creates booking, and publishes a booking event.
 
 4. **Order Processing**
-   - Order Service listens for booking events, processes payment, and confirms order.
+   - Order Service listens for booking events and confirms order.
