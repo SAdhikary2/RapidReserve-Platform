@@ -1,0 +1,14 @@
+# Ignore MySQL docker volumes
+/inventory-service/volume-data/mysql_keycloak_data/
+db-data/
+volume-data/
+
+# Ignore environment files
+.env
+
+# Ignore IDE/project settings
+.idea/
+*.iml
+
+# Ignore logs
+*.log

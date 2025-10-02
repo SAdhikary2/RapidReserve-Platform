@@ -4,7 +4,7 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ticketing
     ports:
       - "3307:3306"
@@ -62,6 +62,36 @@ services:
           SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
           SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka-broker:29092'
           SCHEMA_REGISTRY_LISTENERS: http://kafka-schema-registry:8081
+
+  keycloak-db:
+    container_name: keycloak-mysql
+    image: mysql:8.3.0
+    volumes:
+      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+  keycloak:
+      container_name: keycloak
+      image: quay.io/keycloak/keycloak:24.0.1
+      command: [ "start-dev", "--import-realm" ]
+      environment:
+        DB_VENDOR: MYSQL
+        DB_ADDR: mysql
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+        KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+        KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      ports:
+        - "8091:8080"
+      volumes:
+        - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+      depends_on:
+        - keycloak-db
 
 volumes:
   db-data:
