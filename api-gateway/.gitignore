@@ -1,33 +1,39 @@
-HELP.md
+# Database files
+**/volume-data/
+**/*.sock
+**/*.db
+**/*.sqlite
+**/mysql_data/
+**/postgres_data/
+**/mongo_data/
+
+# Logs
+logs/
+*.log
+
+# Build outputs
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+*.jar
+*.war
+*.ear
 
-### VS Code ###
+# IDE files
+.idea/
+*.iml
 .vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env.local
+*.env.prod
+
+# Docker
+docker-compose.yml
+
