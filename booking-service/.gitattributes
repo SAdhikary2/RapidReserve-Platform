@@ -1,2 +1,39 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
+# Database files
+**/volume-data/
+**/*.sock
+**/*.db
+**/*.sqlite
+**/mysql_data/
+**/postgres_data/
+**/mongo_data/
+
+# Logs
+logs/
+*.log
+
+# Build outputs
+target/
+build/
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env.local
+*.env.prod
+
+# Docker
+docker-compose.yml
+
