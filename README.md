@@ -4,17 +4,6 @@
 
 **RapidReserve-Platform** is a scalable, event-driven ticket booking platform built using Spring Boot 3. It follows a microservices architecture with asynchronous communication via Apache Kafka, utilizes MySQL for persistent storage, and employs Flyway for database migrations. Authentication and authorization are managed using Keycloak. The system is designed for real-time event and ticket management, providing resilience and high performance.
 
-## Architecture
-
-The platform is composed of several microservices:
-
-- **API Gateway**: Central entry point for all requests, routing them to appropriate services.
-- **Inventory Service**: Manages events, venues, and ticket inventories.
-- **Booking Service**: Handles customer bookings and orchestrates booking events.
-- **Order Service**: Responsible for managing orders.
-
-Communication between services is handled asynchronously through Apache Kafka, enhancing scalability and resilience.
-
 ## Technology Stack
 
 - **Spring Boot 3**: Rapid development of robust microservices.
@@ -27,11 +16,16 @@ Communication between services is handled asynchronously through Apache Kafka, e
 
 ---
 
-## Architecture Overview
+## Architecture
 
-> **Optionally Include Architecture Diagram/Screenshot Here**  
-> ![Architecture Diagram Suggestion](architecture-diagram.png)  
-> *(Replace with your actual diagram or export from draw.io/figma for HR presentations)*
+The platform is composed of several microservices:
+
+- **API Gateway**: Central entry point for all requests, routing them to appropriate services.
+- **Inventory Service**: Manages events, venues, and ticket inventories.
+- **Booking Service**: Handles customer bookings and orchestrates booking events.
+- **Order Service**: Responsible for managing orders.
+
+Communication between services is handled asynchronously through Apache Kafka, enhancing scalability and resilience.
 
 ## Microservices Breakdown
 
@@ -120,7 +114,7 @@ Communication between services is handled asynchronously through Apache Kafka, e
 
 Each service contains its own source code, configuration, and resources.
 
-## Example API Flows
+## API Flows
 
 1. **User Authentication**
    - Users authenticate via Keycloak before accessing APIs.
