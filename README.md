@@ -13,6 +13,7 @@
 - **MySQL**: Reliable, scalable relational database.
 - **Flyway**: Automated, versioned database migrations.
 - **Spring Cloud Gateway**: API Gateway and traffic management.
+- **Docker**: Containerization and deployment of all services.
 
 ---
 
