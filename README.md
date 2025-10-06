@@ -91,7 +91,7 @@ Communication between services is handled asynchronously through Apache Kafka, e
    ```
 
 2. **Set Up MySQL Database**
-   - Create databases for each microservice (if needed).
+   - Create databases for each microservice .
    - Configure connection credentials in each service's `application.properties`.
 
 3. **Run Keycloak for Authentication**
