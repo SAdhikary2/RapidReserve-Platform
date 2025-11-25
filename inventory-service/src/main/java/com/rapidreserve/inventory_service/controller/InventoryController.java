@@ -1,9 +1,12 @@
 package com.rapidreserve.inventory_service.controller;
 
+import com.rapidreserve.inventory_service.dto.CreateEventRequest;
+import com.rapidreserve.inventory_service.dto.UpdateEventRequest;
 import com.rapidreserve.inventory_service.response.ApiResponse;
 import com.rapidreserve.inventory_service.response.EventInventoryResponse;
 import com.rapidreserve.inventory_service.response.VenueInventoryResponse;
 import com.rapidreserve.inventory_service.service.InventoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +42,31 @@ public class InventoryController {
         return ApiResponse.success(event, "Events retrieved successfully");
     }
 
-    @PutMapping("/inventory/event/{eventId}/capacity/{capacity}")
-    public @ResponseBody ApiResponse<Void> updateEventCapacity(@PathVariable("eventId") Long eventId,
-                                                               @PathVariable("capacity") Long ticketsBooked) {
+    @PostMapping("/inventory/events/create")
+    public @ResponseBody ApiResponse<EventInventoryResponse> createEvent(
+            @RequestBody @Valid CreateEventRequest request) {
+        EventInventoryResponse event = inventoryService.createEvent(request);
+        return ApiResponse.success(event, "Event created successfully");
+    }
+
+    @PutMapping("/inventory/events/update/{eventId}")
+    public @ResponseBody ApiResponse<EventInventoryResponse> updateEvent(
+            @PathVariable("eventId") Long eventId,
+            @RequestBody @Valid UpdateEventRequest request) {
+        EventInventoryResponse event = inventoryService.updateEvent(eventId, request);
+        return ApiResponse.success(event, "Event updated successfully");
+    }
+
+    @DeleteMapping("/inventory/events/delete/{eventId}")
+    public @ResponseBody ApiResponse<Void> deleteEvent(@PathVariable("eventId") Long eventId) {
+        inventoryService.deleteEvent(eventId);
+        return ApiResponse.success(null, "Event deleted successfully");
+    }
+
+    @PutMapping("/inventory/event/{eventId}/capacity/{ticketsBooked}")
+    public @ResponseBody ApiResponse<Void> updateEventCapacity(
+            @PathVariable("eventId") Long eventId,
+            @PathVariable("ticketsBooked") Long ticketsBooked) {
         inventoryService.updateEventCapacity(eventId, ticketsBooked);
         return ApiResponse.success(null, "Event capacity updated successfully");
     }

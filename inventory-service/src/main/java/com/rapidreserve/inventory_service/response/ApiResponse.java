@@ -23,7 +23,7 @@ public class ApiResponse<T> {
         private String message;
     }
 
-    // Helper method to create success responses
+    // Success helper
     public static <T> ApiResponse<T> success(T data, String message) {
         return ApiResponse.<T>builder()
                 .meta(Meta.builder()
@@ -35,7 +35,7 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    // You can add more helper methods for errors if needed
+    // Error helper with code
     public static <T> ApiResponse<T> error(int code, String message) {
         return ApiResponse.<T>builder()
                 .meta(Meta.builder()
@@ -45,5 +45,10 @@ public class ApiResponse<T> {
                         .build())
                 .data(null)
                 .build();
+    }
+
+    // Overloaded error helper without code (defaults to 500)
+    public static <T> ApiResponse<T> error(String message) {
+        return error(500, message);
     }
 }
