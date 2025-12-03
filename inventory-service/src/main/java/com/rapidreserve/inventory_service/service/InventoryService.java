@@ -1,7 +1,9 @@
 package com.rapidreserve.inventory_service.service;
 
 import com.rapidreserve.inventory_service.dto.CreateEventRequest;
+import com.rapidreserve.inventory_service.dto.CreateVenueRequest;
 import com.rapidreserve.inventory_service.dto.UpdateEventRequest;
+import com.rapidreserve.inventory_service.dto.UpdateVenueRequest;
 import com.rapidreserve.inventory_service.entity.Event;
 import com.rapidreserve.inventory_service.entity.Venue;
 import com.rapidreserve.inventory_service.exception.EventNotFoundException;
@@ -32,21 +34,13 @@ public class InventoryService {
         this.venueRepository = venueRepository;
     }
 
-    // Existing methods
+    // =============================================
+    // EVENT METHODS
+    // =============================================
+
     public List<EventInventoryResponse> getAllEvents(){
         final List<Event> events = eventRepository.findAll();
         return events.stream().map(this::mapToEventInventoryResponse).collect(Collectors.toList());
-    }
-
-    public VenueInventoryResponse getVenueInformation(final Long venueId) {
-        final Venue venue = venueRepository.findById(venueId)
-                .orElseThrow(() -> new VenueNotFoundException("Venue not found with id: " + venueId));
-
-        return VenueInventoryResponse.builder()
-                .venueId(venue.getId())
-                .venueName(venue.getName())
-                .totalCapacity(venue.getTotalCapacity())
-                .build();
     }
 
     public EventInventoryResponse getEventInventory(final Long eventId){
@@ -126,18 +120,108 @@ public class InventoryService {
         }
 
         // Update capacity
-        event.setAvailableCapacity(event.getAvailableCapacity() + ticketsBooked);
+        event.setAvailableCapacity(event.getAvailableCapacity() - ticketsBooked);
         eventRepository.save(event);
 
         log.info("Updated event capacity for event ID: {}. Tickets booked: {}, Remaining: {}",
                 eventId, ticketsBooked, event.getAvailableCapacity());
     }
 
-    // Helper method to map Entity to Response DTO
+    // =============================================
+    // VENUE METHODS
+    // =============================================
+
+    public VenueInventoryResponse getVenueInformation(final Long venueId) {
+        final Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new VenueNotFoundException("Venue not found with id: " + venueId));
+
+        return VenueInventoryResponse.builder()
+                .Id(venue.getId())
+                .name(venue.getName())
+                .totalCapacity(venue.getTotalCapacity())
+                .build();
+    }
+
+    public List<VenueInventoryResponse> getAllVenues() {
+        final List<Venue> venues = venueRepository.findAll();
+        return venues.stream()
+                .map(this::mapToVenueResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public VenueInventoryResponse createVenue(CreateVenueRequest request) {
+        Venue venue = new Venue();
+        venue.setName(request.getName());
+        venue.setAddress(request.getAddress());
+        venue.setTotalCapacity(request.getTotalCapacity());
+
+        Venue savedVenue = venueRepository.save(venue);
+        log.info("Created new venue: {} with ID: {}", request.getName(), savedVenue.getId());
+
+        return mapToVenueResponse(savedVenue);
+    }
+
+    @Transactional
+    public VenueInventoryResponse updateVenue(Long venueId, UpdateVenueRequest request) {
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new VenueNotFoundException("Venue not found with id: " + venueId));
+
+        // Update only provided fields
+        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+            venue.setName(request.getName());
+        }
+        if (request.getAddress() != null && !request.getAddress().trim().isEmpty()) {
+            venue.setAddress(request.getAddress());
+        }
+        if (request.getTotalCapacity() != null) {
+            // Check if any events exceed new capacity
+            validateCapacityForEvents(venueId, request.getTotalCapacity());
+            venue.setTotalCapacity(request.getTotalCapacity());
+        }
+
+        Venue updatedVenue = venueRepository.save(venue);
+        log.info("Updated venue with ID: {}", venueId);
+
+        return mapToVenueResponse(updatedVenue);
+    }
+
+    private void validateCapacityForEvents(Long venueId, Long newCapacity) {
+        List<Event> events = eventRepository.findByVenueId(venueId);
+        for (Event event : events) {
+            if (event.getTotalCapacity() > newCapacity) {
+                throw new InsufficientCapacityException(
+                        String.format("Cannot reduce venue capacity. Event '%s' has capacity %d which exceeds new venue capacity %d",
+                                event.getName(), event.getTotalCapacity(), newCapacity));
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteVenue(Long venueId) {
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new VenueNotFoundException("Venue not found with id: " + venueId));
+
+        // Check if venue has associated events
+        List<Event> events = eventRepository.findByVenueId(venueId);
+        if (!events.isEmpty()) {
+            throw new IllegalStateException(
+                    "Cannot delete venue with ID: " + venueId +
+                            " because it has " + events.size() + " associated event(s)");
+        }
+
+        venueRepository.delete(venue);
+        log.info("Deleted venue with ID: {}", venueId);
+    }
+
+    // =============================================
+    // HELPER METHODS
+    // =============================================
+
     private EventInventoryResponse mapToEventInventoryResponse(Event event) {
         VenueInventoryResponse venueResponse = VenueInventoryResponse.builder()
-                .venueId(event.getVenue().getId())
-                .venueName(event.getVenue().getName())
+                .Id(event.getVenue().getId())
+                .name(event.getVenue().getName())
                 .totalCapacity(event.getVenue().getTotalCapacity())
                 .build();
 
@@ -149,5 +233,14 @@ public class InventoryService {
                 .venue(venueResponse)
                 .ticketPrice(event.getTicketPrice())
                 .build();
+    }
+
+    private VenueInventoryResponse mapToVenueResponse(Venue venue) {
+        VenueInventoryResponse response = new VenueInventoryResponse();
+        response.setId(venue.getId());
+        response.setName(venue.getName());
+        response.setAddress(venue.getAddress());
+        response.setTotalCapacity(venue.getTotalCapacity());
+        return response;
     }
 }
