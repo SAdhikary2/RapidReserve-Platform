@@ -31,7 +31,7 @@ public class BookingService {
 
     public BookingResponse createBooking(final BookingRequest request){
 
-       //check if user exists
+        //check if user exists
         final Customer customer = customerRepository.findById(request.getUserId()).orElse(null);
         if (customer == null){
             throw new RuntimeException("User not found");
@@ -40,7 +40,22 @@ public class BookingService {
         //check if there is enough inventory
         final InventoryResponse inventoryResponse = inventoryServiceClient.getInventory(request.getEventId());
         log.info("Inventory Service Response" + inventoryResponse);
-        if (inventoryResponse.getCapacity() < request.getTicketCount()){
+
+        // Add null checks
+        if (inventoryResponse == null) {
+            throw new RuntimeException("Inventory service returned null response");
+        }
+
+        if (inventoryResponse.getAvailableCapacity() == null) {
+            throw new RuntimeException("Event capacity information is not available");
+        }
+
+        if (inventoryResponse.getTicketPrice() == null) {
+            throw new RuntimeException("Ticket price information is not available");
+        }
+
+        // Now safely use the values
+        if (inventoryResponse.getAvailableCapacity() < request.getTicketCount()){
             throw new RuntimeException("Not enough inventory");
         }
 
