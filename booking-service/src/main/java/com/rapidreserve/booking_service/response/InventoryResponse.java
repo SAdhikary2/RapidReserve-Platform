@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 public class InventoryResponse {
     private Long eventId;
     private String event;
-    private Long capacity;
     private VenueResponse venue;
     private BigDecimal ticketPrice;
+    private Long totalCapacity;
+    private Long availableCapacity;
 }
