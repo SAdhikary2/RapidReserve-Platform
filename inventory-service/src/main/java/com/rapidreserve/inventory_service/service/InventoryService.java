@@ -56,7 +56,6 @@ public class InventoryService {
         return mapToEventInventoryResponse(event);
     }
 
-    // NEW CRUD methods
     @Transactional
     public EventInventoryResponse createEvent(CreateEventRequest request) {
         // Validate venue exists
@@ -72,7 +71,7 @@ public class InventoryService {
         Event event = new Event();
         event.setName(request.getEvent());
         event.setTotalCapacity(request.getTotalCapacity());
-        event.setAvailableCapacity(request.getTotalCapacity()); // Start with full availability
+        event.setAvailableCapacity(request.getTotalCapacity());
         event.setVenue(venue);
         event.setTicketPrice(request.getTicketPrice());
 
@@ -115,7 +114,6 @@ public class InventoryService {
         log.info("Deleted event with ID: {}", eventId);
     }
 
-    // FIXED Capacity update method
     @Transactional
     public void updateEventCapacity(final Long eventId, final Long ticketsBooked) {
         Event event = eventRepository.findById(eventId)
@@ -128,7 +126,7 @@ public class InventoryService {
         }
 
         // Update capacity
-        event.setAvailableCapacity(event.getAvailableCapacity() - ticketsBooked);
+        event.setAvailableCapacity(event.getAvailableCapacity() + ticketsBooked);
         eventRepository.save(event);
 
         log.info("Updated event capacity for event ID: {}. Tickets booked: {}, Remaining: {}",
