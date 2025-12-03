@@ -8,7 +8,6 @@ import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
-
 import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
 
 @Configuration
@@ -17,6 +16,30 @@ public class InventoryServiceRoutes {
     @Bean
     public RouterFunction<ServerResponse> inventoryRoutes() {
         return GatewayRouterFunctions.route("inventory-service")
+
+                // Get All Venues
+                .route(RequestPredicates.GET("/api/v1/inventory/venues"),
+                        HandlerFunctions.http("http://localhost:8080/api/v1/inventory/venues"))
+
+                //Get Event by ID
+                .route(RequestPredicates.GET("/api/v1/inventory/event/{eventId}"),
+                        request -> forwardWithPathVariable(request, "eventId",
+                                "http://localhost:8080/api/v1/inventory/event/"))
+
+                // Create Venue
+                .route(RequestPredicates.POST("/api/v1/inventory/venues/create"),
+                        HandlerFunctions.http("http://localhost:8080/api/v1/inventory/venues/create"))
+
+                // Update Venue
+                .route(RequestPredicates.PUT("/api/v1/inventory/venues/{venueId}"),
+                        request -> forwardWithPathVariable(request, "venueId",
+                                "http://localhost:8080/api/v1/inventory/venues/"))
+
+                // Delete Venue
+                .route(RequestPredicates.DELETE("/api/v1/inventory/venues/{venueId}"),
+                        request -> forwardWithPathVariable(request, "venueId",
+                                "http://localhost:8080/api/v1/inventory/venues/"))
+
                 //Get All Events
                 .route(RequestPredicates.GET("/api/v1/inventory/events"),
                         request -> HandlerFunctions.http("http://localhost:8080/api/v1/inventory/events").handle(request))
@@ -25,11 +48,6 @@ public class InventoryServiceRoutes {
                 .route(RequestPredicates.GET("/api/v1/inventory/venue/{venueId}"),
                         request -> forwardWithPathVariable(request, "venueId",
                                 "http://localhost:8080/api/v1/inventory/venue/"))
-
-                //Get Event by ID
-                .route(RequestPredicates.GET("/api/v1/inventory/event/{eventId}"),
-                        request -> forwardWithPathVariable(request, "eventId",
-                                "http://localhost:8080/api/v1/inventory/event/"))
 
                 // Create Event
                 .route(RequestPredicates.POST("/api/v1/inventory/events/create"),
