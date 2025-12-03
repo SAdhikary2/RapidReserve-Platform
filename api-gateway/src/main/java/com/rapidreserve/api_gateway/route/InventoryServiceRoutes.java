@@ -31,6 +31,20 @@ public class InventoryServiceRoutes {
                         request -> forwardWithPathVariable(request, "eventId",
                                 "http://localhost:8080/api/v1/inventory/event/"))
 
+                // Create Event
+                .route(RequestPredicates.POST("/api/v1/inventory/events/create"),
+                        HandlerFunctions.http("http://localhost:8080/api/v1/inventory/events/create"))
+
+                // Update Event
+                .route(RequestPredicates.PUT("/api/v1/inventory/events/update/{eventId}"),
+                        request -> forwardWithPathVariable(request, "eventId",
+                                "http://localhost:8080/api/v1/inventory/events/update/"))
+
+                // Delete Event
+                .route(RequestPredicates.DELETE("/api/v1/inventory/events/delete/{eventId}"),
+                        request -> forwardWithPathVariable(request, "eventId",
+                                "http://localhost:8080/api/v1/inventory/events/delete/"))
+
                 //Update Event Capacity
                 .route(RequestPredicates.PUT("/api/v1/inventory/event/{eventId}/capacity/{capacity}"),
                         request -> {
